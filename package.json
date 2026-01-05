@@ -1,0 +1,59 @@
+{
+	"name": "n8n-nodes-allscreenshots",
+	"version": "1.0.0",
+	"description": "n8n community node for Allscreenshots - capture, schedule, and manage website screenshots at scale",
+	"keywords": [
+		"n8n",
+		"n8n-community-node-package",
+		"screenshot",
+		"web-capture",
+		"allscreenshots",
+		"automation",
+		"webpage",
+		"capture"
+	],
+	"license": "MIT",
+	"homepage": "https://allscreenshots.com",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/allscreenshots/n8n-nodes-allscreenshots.git"
+	},
+	"main": "dist/nodes/Allscreenshots/Allscreenshots.node.js",
+	"scripts": {
+		"build": "tsc && gulp build:icons",
+		"watch": "tsc --watch",
+		"format": "prettier nodes credentials --write",
+		"lint": "eslint nodes credentials package.json",
+		"lintfix": "eslint nodes credentials package.json --fix",
+		"prepublishOnly": "npm run build"
+	},
+	"files": [
+		"dist"
+	],
+	"n8n": {
+		"n8nNodesApiVersion": 1,
+		"credentials": [
+			"dist/credentials/AllscreenshotsApi.credentials.js"
+		],
+		"nodes": [
+			"dist/nodes/Allscreenshots/Allscreenshots.node.js",
+			"dist/nodes/Allscreenshots/AllscreenshotsTrigger.node.js"
+		]
+	},
+	"devDependencies": {
+		"@types/node": "^22.10.2",
+		"@typescript-eslint/parser": "^7.2.0",
+		"eslint": "^8.56.0",
+		"gulp": "^4.0.2",
+		"n8n-workflow": "*",
+		"prettier": "^3.2.5",
+		"typescript": "^5.4.2"
+	},
+	"peerDependencies": {
+		"n8n-workflow": "*"
+	},
+	"engines": {
+		"node": ">=18.10",
+		"pnpm": ">=9.1"
+	}
+}
