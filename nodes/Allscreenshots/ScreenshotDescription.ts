@@ -103,6 +103,47 @@ export const screenshotFields: INodeProperties[] = [
 		],
 	},
 
+	// ========== Common Options (Top Level) ==========
+	{
+		displayName: 'Full Page',
+		name: 'fullPage',
+		type: 'boolean',
+		default: false,
+		description: 'Whether to capture the entire scrollable page instead of just the viewport',
+		displayOptions: {
+			show: {
+				resource: ['screenshot'],
+				operation: ['capture', 'captureAsync'],
+			},
+		},
+	},
+	{
+		displayName: 'Dark Mode',
+		name: 'darkMode',
+		type: 'boolean',
+		default: false,
+		description: 'Whether to emulate dark mode preference (prefers-color-scheme: dark)',
+		displayOptions: {
+			show: {
+				resource: ['screenshot'],
+				operation: ['capture', 'captureAsync'],
+			},
+		},
+	},
+	{
+		displayName: 'Block Cookie Banners',
+		name: 'blockCookieBanners',
+		type: 'boolean',
+		default: false,
+		description: 'Whether to automatically dismiss/block cookie consent banners',
+		displayOptions: {
+			show: {
+				resource: ['screenshot'],
+				operation: ['capture', 'captureAsync'],
+			},
+		},
+	},
+
 	// ========== Viewport Options ==========
 	{
 		displayName: 'Viewport',
@@ -191,13 +232,6 @@ export const screenshotFields: INodeProperties[] = [
 					minValue: 1,
 					maxValue: 100,
 				},
-			},
-			{
-				displayName: 'Full Page',
-				name: 'fullPage',
-				type: 'boolean',
-				default: false,
-				description: 'Whether to capture the entire scrollable page instead of just the viewport',
 			},
 			{
 				displayName: 'Element Selector',
@@ -296,13 +330,6 @@ export const screenshotFields: INodeProperties[] = [
 		},
 		options: [
 			{
-				displayName: 'Dark Mode',
-				name: 'darkMode',
-				type: 'boolean',
-				default: false,
-				description: 'Whether to emulate dark mode preference (prefers-color-scheme: dark)',
-			},
-			{
 				displayName: 'Custom CSS',
 				name: 'customCss',
 				type: 'string',
@@ -344,13 +371,6 @@ export const screenshotFields: INodeProperties[] = [
 				type: 'boolean',
 				default: false,
 				description: 'Whether to block advertisements',
-			},
-			{
-				displayName: 'Block Cookie Banners',
-				name: 'blockCookieBanners',
-				type: 'boolean',
-				default: false,
-				description: 'Whether to automatically dismiss/block cookie consent banners',
 			},
 			{
 				displayName: 'Block Level',

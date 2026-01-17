@@ -101,12 +101,16 @@ export function buildScreenshotPayload(params: IDataObject): IDataObject {
 		payload.device = params.device;
 	}
 
+	// Top-level options
+	if (params.fullPage !== undefined) payload.fullPage = params.fullPage;
+	if (params.darkMode !== undefined) payload.darkMode = params.darkMode;
+	if (params.blockCookieBanners !== undefined) payload.blockCookieBanners = params.blockCookieBanners;
+
 	// Output options
 	const outputOptions = params.outputOptions as IDataObject | undefined;
 	if (outputOptions && Object.keys(outputOptions).length > 0) {
 		if (outputOptions.format) payload.format = outputOptions.format;
 		if (outputOptions.quality !== undefined) payload.quality = outputOptions.quality;
-		if (outputOptions.fullPage !== undefined) payload.fullPage = outputOptions.fullPage;
 		if (outputOptions.selector) payload.selector = outputOptions.selector;
 	}
 
@@ -122,7 +126,6 @@ export function buildScreenshotPayload(params: IDataObject): IDataObject {
 	// Page modifications
 	const pageModifications = params.pageModifications as IDataObject | undefined;
 	if (pageModifications && Object.keys(pageModifications).length > 0) {
-		if (pageModifications.darkMode !== undefined) payload.darkMode = pageModifications.darkMode;
 		if (pageModifications.customCss) payload.customCss = pageModifications.customCss;
 		if (pageModifications.hideSelectors) {
 			const selectors = (pageModifications.hideSelectors as string)
@@ -139,8 +142,6 @@ export function buildScreenshotPayload(params: IDataObject): IDataObject {
 	const blockingOptions = params.blockingOptions as IDataObject | undefined;
 	if (blockingOptions && Object.keys(blockingOptions).length > 0) {
 		if (blockingOptions.blockAds !== undefined) payload.blockAds = blockingOptions.blockAds;
-		if (blockingOptions.blockCookieBanners !== undefined)
-			payload.blockCookieBanners = blockingOptions.blockCookieBanners;
 		if (blockingOptions.blockLevel && blockingOptions.blockLevel !== 'none') {
 			payload.blockLevel = blockingOptions.blockLevel;
 		}
@@ -231,43 +232,3 @@ export function buildComposePayload(params: IDataObject): IDataObject {
 	return payload;
 }
 
-export function buildSchedulePayload(params: IDataObject): IDataObject {
-	const payload: IDataObject = {
-		name: params.name,
-		url: params.url,
-		schedule: params.cron,
-	};
-
-	if (params.timezone) {
-		payload.timezone = params.timezone;
-	}
-
-	// Screenshot options
-	const scheduleOptions = params.scheduleOptions as IDataObject | undefined;
-	if (scheduleOptions && Object.keys(scheduleOptions).length > 0) {
-		const options: IDataObject = {};
-		if (scheduleOptions.format) options.format = scheduleOptions.format;
-		if (scheduleOptions.fullPage !== undefined) options.fullPage = scheduleOptions.fullPage;
-		if (scheduleOptions.width || scheduleOptions.height) {
-			options.viewport = {
-				width: scheduleOptions.width || 1920,
-				height: scheduleOptions.height || 1080,
-			};
-		}
-		if (Object.keys(options).length > 0) {
-			payload.options = options;
-		}
-	}
-
-	// Webhook
-	if (params.webhookUrl) {
-		payload.webhookUrl = params.webhookUrl;
-	}
-
-	// Retention
-	if (params.retentionDays !== undefined) {
-		payload.retentionDays = params.retentionDays;
-	}
-
-	return payload;
-}

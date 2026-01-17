@@ -13,7 +13,7 @@ export class AllscreenshotsTrigger implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'Allscreenshots Trigger',
 		name: 'allscreenshotsTrigger',
-		icon: 'file:allscreenshots.png',
+		icon: 'file:allscreenshots.svg',
 		group: ['trigger'],
 		version: 1,
 		subtitle: '={{$parameter["event"]}}',
@@ -67,35 +67,9 @@ export class AllscreenshotsTrigger implements INodeType {
 						description: 'Triggered when a bulk job completes all screenshots',
 					},
 					{
-						name: 'Schedule Executed',
-						value: 'SCHEDULE_EXECUTED',
-						description: 'Triggered when a scheduled screenshot is captured',
-					},
-					{
-						name: 'Schedule Failed',
-						value: 'SCHEDULE_FAILED',
-						description: 'Triggered when a scheduled screenshot fails',
-					},
-					{
 						name: 'Compose Completed',
 						value: 'COMPOSE_COMPLETED',
 						description: 'Triggered when a compose job finishes',
-					},
-				],
-			},
-			{
-				displayName: 'Options',
-				name: 'options',
-				type: 'collection',
-				placeholder: 'Add Option',
-				default: {},
-				options: [
-					{
-						displayName: 'Schedule ID Filter',
-						name: 'scheduleId',
-						type: 'string',
-						default: '',
-						description: 'Only trigger for events from this specific schedule ID',
 					},
 				],
 			},
@@ -127,16 +101,11 @@ export class AllscreenshotsTrigger implements INodeType {
 			async create(this: IHookFunctions): Promise<boolean> {
 				const webhookUrl = this.getNodeWebhookUrl('default') as string;
 				const event = this.getNodeParameter('event') as string;
-				const options = this.getNodeParameter('options', {}) as IDataObject;
 
 				const body: IDataObject = {
 					url: webhookUrl,
 					events: event === '*' ? ['*'] : [event],
 				};
-
-				if (options.scheduleId) {
-					body.scheduleId = options.scheduleId;
-				}
 
 				try {
 					const response = await allscreenshotsApiRequest.call(
@@ -187,7 +156,6 @@ export class AllscreenshotsTrigger implements INodeType {
 		const body = req.body as IDataObject;
 		const webhookData = this.getWorkflowStaticData('node');
 		const event = this.getNodeParameter('event') as string;
-		const options = this.getNodeParameter('options', {}) as IDataObject;
 
 		// Verify webhook signature if secret exists
 		if (webhookData.webhookSecret && req.headers['x-webhook-signature']) {
@@ -223,16 +191,6 @@ export class AllscreenshotsTrigger implements INodeType {
 			return {
 				webhookResponse: 'Event filtered',
 			};
-		}
-
-		// Filter by schedule ID if specified
-		if (options.scheduleId) {
-			const data = body.data as IDataObject;
-			if (data && data.scheduleId !== options.scheduleId) {
-				return {
-					webhookResponse: 'Schedule filtered',
-				};
-			}
 		}
 
 		// Return the webhook data for the workflow

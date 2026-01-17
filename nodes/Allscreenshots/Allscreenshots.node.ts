@@ -13,21 +13,19 @@ import {
 	buildScreenshotPayload,
 	buildBulkPayload,
 	buildComposePayload,
-	buildSchedulePayload,
 } from './GenericFunctions';
 
 import { screenshotOperations, screenshotFields } from './ScreenshotDescription';
 import { asyncJobOperations, asyncJobFields } from './AsyncJobDescription';
 import { bulkOperations, bulkFields } from './BulkDescription';
 import { composeOperations, composeFields } from './ComposeDescription';
-import { scheduleOperations, scheduleFields } from './ScheduleDescription';
 import { usageOperations, usageFields } from './UsageDescription';
 
 export class Allscreenshots implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'Allscreenshots',
 		name: 'allscreenshots',
-		icon: 'file:allscreenshots.png',
+		icon: 'file:allscreenshots.svg',
 		group: ['transform'],
 		version: 1,
 		subtitle: '={{$parameter["operation"] + " " + $parameter["resource"]}}',
@@ -72,11 +70,6 @@ export class Allscreenshots implements INodeType {
 						description: 'Combine multiple screenshots into one image',
 					},
 					{
-						name: 'Schedule',
-						value: 'schedule',
-						description: 'Create and manage scheduled screenshots',
-					},
-					{
 						name: 'Usage',
 						value: 'usage',
 						description: 'Check API usage and quota',
@@ -93,8 +86,6 @@ export class Allscreenshots implements INodeType {
 			...bulkFields,
 			...composeOperations,
 			...composeFields,
-			...scheduleOperations,
-			...scheduleFields,
 			...usageOperations,
 			...usageFields,
 		],
@@ -118,6 +109,9 @@ export class Allscreenshots implements INodeType {
 						const params = {
 							url: this.getNodeParameter('url', i) as string,
 							device: this.getNodeParameter('device', i, '') as string,
+							fullPage: this.getNodeParameter('fullPage', i, false) as boolean,
+							darkMode: this.getNodeParameter('darkMode', i, false) as boolean,
+							blockCookieBanners: this.getNodeParameter('blockCookieBanners', i, false) as boolean,
 							viewportOptions: this.getNodeParameter('viewportOptions', i, {}) as IDataObject,
 							outputOptions: this.getNodeParameter('outputOptions', i, {}) as IDataObject,
 							waitOptions: this.getNodeParameter('waitOptions', i, {}) as IDataObject,
@@ -160,6 +154,9 @@ export class Allscreenshots implements INodeType {
 						const params = {
 							url: this.getNodeParameter('url', i) as string,
 							device: this.getNodeParameter('device', i, '') as string,
+							fullPage: this.getNodeParameter('fullPage', i, false) as boolean,
+							darkMode: this.getNodeParameter('darkMode', i, false) as boolean,
+							blockCookieBanners: this.getNodeParameter('blockCookieBanners', i, false) as boolean,
 							viewportOptions: this.getNodeParameter('viewportOptions', i, {}) as IDataObject,
 							outputOptions: this.getNodeParameter('outputOptions', i, {}) as IDataObject,
 							waitOptions: this.getNodeParameter('waitOptions', i, {}) as IDataObject,
@@ -407,114 +404,6 @@ export class Allscreenshots implements INodeType {
 						} else {
 							returnData.push({ json: response, pairedItem: { item: i } });
 						}
-					}
-				}
-
-				// =====================
-				// SCHEDULE RESOURCE
-				// =====================
-				else if (resource === 'schedule') {
-					if (operation === 'create') {
-						const params = {
-							name: this.getNodeParameter('name', i) as string,
-							url: this.getNodeParameter('url', i) as string,
-							cron: this.getNodeParameter('cron', i) as string,
-							timezone: this.getNodeParameter('timezone', i, 'UTC') as string,
-							scheduleOptions: this.getNodeParameter('scheduleOptions', i, {}) as IDataObject,
-							webhookUrl: this.getNodeParameter('webhookUrl', i, '') as string,
-							retentionDays: this.getNodeParameter('retentionDays', i, 30) as number,
-						};
-
-						const body = buildSchedulePayload(params);
-						const response = await allscreenshotsApiRequest.call(
-							this,
-							'POST',
-							'/v1/schedules',
-							body,
-						);
-						returnData.push({ json: response, pairedItem: { item: i } });
-					} else if (operation === 'get') {
-						const scheduleId = this.getNodeParameter('scheduleId', i) as string;
-						const response = await allscreenshotsApiRequest.call(
-							this,
-							'GET',
-							`/v1/schedules/${scheduleId}`,
-						);
-						returnData.push({ json: response, pairedItem: { item: i } });
-					} else if (operation === 'list') {
-						const response = await allscreenshotsApiRequest.call(this, 'GET', '/v1/schedules');
-
-						const schedules = (response.schedules as IDataObject[]) || response;
-						if (Array.isArray(schedules)) {
-							for (const schedule of schedules) {
-								returnData.push({ json: schedule as IDataObject, pairedItem: { item: i } });
-							}
-						} else {
-							returnData.push({ json: response, pairedItem: { item: i } });
-						}
-					} else if (operation === 'update') {
-						const scheduleId = this.getNodeParameter('scheduleId', i) as string;
-						const updateFields = this.getNodeParameter('updateFields', i, {}) as IDataObject;
-
-						const body: IDataObject = {};
-						if (updateFields.name) body.name = updateFields.name;
-						if (updateFields.url) body.url = updateFields.url;
-						if (updateFields.schedule) body.schedule = updateFields.schedule;
-						if (updateFields.timezone) body.timezone = updateFields.timezone;
-						if (updateFields.retentionDays) body.retentionDays = updateFields.retentionDays;
-
-						const response = await allscreenshotsApiRequest.call(
-							this,
-							'PUT',
-							`/v1/schedules/${scheduleId}`,
-							body,
-						);
-						returnData.push({ json: response, pairedItem: { item: i } });
-					} else if (operation === 'delete') {
-						const scheduleId = this.getNodeParameter('scheduleId', i) as string;
-						await allscreenshotsApiRequest.call(this, 'DELETE', `/v1/schedules/${scheduleId}`);
-						returnData.push({
-							json: { success: true, deleted: scheduleId },
-							pairedItem: { item: i },
-						});
-					} else if (operation === 'pause') {
-						const scheduleId = this.getNodeParameter('scheduleId', i) as string;
-						const response = await allscreenshotsApiRequest.call(
-							this,
-							'POST',
-							`/v1/schedules/${scheduleId}/pause`,
-						);
-						returnData.push({ json: response, pairedItem: { item: i } });
-					} else if (operation === 'resume') {
-						const scheduleId = this.getNodeParameter('scheduleId', i) as string;
-						const response = await allscreenshotsApiRequest.call(
-							this,
-							'POST',
-							`/v1/schedules/${scheduleId}/resume`,
-						);
-						returnData.push({ json: response, pairedItem: { item: i } });
-					} else if (operation === 'trigger') {
-						const scheduleId = this.getNodeParameter('scheduleId', i) as string;
-						const response = await allscreenshotsApiRequest.call(
-							this,
-							'POST',
-							`/v1/schedules/${scheduleId}/trigger`,
-						);
-						returnData.push({ json: response, pairedItem: { item: i } });
-					} else if (operation === 'getHistory') {
-						const scheduleId = this.getNodeParameter('scheduleId', i) as string;
-						const options = this.getNodeParameter('historyOptions', i, {}) as IDataObject;
-						const qs: IDataObject = {};
-						if (options.limit) qs.limit = options.limit;
-
-						const response = await allscreenshotsApiRequest.call(
-							this,
-							'GET',
-							`/v1/schedules/${scheduleId}/history`,
-							{},
-							qs,
-						);
-						returnData.push({ json: response, pairedItem: { item: i } });
 					}
 				}
 
