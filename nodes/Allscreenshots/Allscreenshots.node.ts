@@ -29,7 +29,7 @@ export class Allscreenshots implements INodeType {
 		group: ['transform'],
 		version: 1,
 		subtitle: '={{$parameter["operation"] + " " + $parameter["resource"]}}',
-		description: 'Capture, schedule, and manage website screenshots with Allscreenshots API',
+		description: 'Capture and manage website screenshots with Allscreenshots API',
 		defaults: {
 			name: 'Allscreenshots',
 		},
