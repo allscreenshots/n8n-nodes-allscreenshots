@@ -1,6 +1,6 @@
 {
 	"name": "@allscreenshots/n8n-nodes-allscreenshots",
-	"version": "1.0.2",
+	"version": "1.0.3",
 	"description": "n8n community node for Allscreenshots - capture and manage website screenshots at scale",
 	"keywords": [
 		"n8n",
