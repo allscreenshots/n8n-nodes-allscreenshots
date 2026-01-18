@@ -13,6 +13,11 @@
 		"capture"
 	],
 	"license": "MIT",
+	"author": {
+		"name": "Allscreenshots",
+		"email": "support@allscreenshots.com",
+		"url": "https://allscreenshots.com"
+	},
 	"homepage": "https://allscreenshots.com",
 	"repository": {
 		"type": "git",
